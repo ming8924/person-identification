@@ -1,0 +1,3 @@
+[submodule "external/vlfeat"]
+	path = external/vlfeat
+	url = https://github.com/vlfeat/vlfeat.git
