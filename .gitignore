@@ -1,3 +1,15 @@
+# Mac OS X Finder
+.DS_Store
+
+# Emacs backups
+*~
+
+# Vim swap files
+.*.swp
+
+# Feature cache
 feat_cache/*.mat
+
+# Model cache
 models/*.mat
 models/*.caffemodel

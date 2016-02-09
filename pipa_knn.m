@@ -8,10 +8,10 @@ for i = 1: numel(config.MODEL_PART_WEIGHT)
 end
 
 % Choose feature concatenation 
-feature1 = cat(1, fc7_feature(:, :, 4));
-feature2 = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3));
-feature3 = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3), fc7_feature(:, :, 4));
-% feature1 = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3), fc7_feature(:, :, 4), fc7_feature(:, :, 5), fc7_feature(:, :, 6));
+feature{1} = cat(1, fc7_feature(:, :, 4));
+feature{2} = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3));
+feature{3} = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3), fc7_feature(:, :, 4));
+feature{4} = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3), fc7_feature(:, :, 4), fc7_feature(:, :, 5), fc7_feature(:, :, 6));
 % feature1 = cat(1, fc7_feature(:, :, 1), fc7_feature(:, :, 2), fc7_feature(:, :, 3), fc7_feature(:, :, 4), fc7_feature(:, :, 6));
 
 % Prepare test set split ids
@@ -23,12 +23,16 @@ test_id_test = all_id(~ismember(all_id, data.test_split));
 train_label = data.identity_ids(train_id);
 test_label = data.identity_ids(test_id);
 
-kdtree = vl_kdtreebuild(feature1(:, train_id_test));
 
-
-fprintf('Querying the test image features\n');
-tic
-[index, distance] = vl_kdtreequery(kdtree, feature1(:, train_id_test), feature1(:, test_id_test), 'NumNeighbors', 10) ;
-toc
-label = train_label(index);
+for i = 1: numel(feature)
+  fprintf('Building kdtree for feature %d\n', i);
+  tic
+  kdtree{i} = vl_kdtreebuild(feature{i}(:, train_id_test));
+  toc
+  fprintf('Querying the test image features\n');
+  tic
+  [index{i}, distance{i}] = vl_kdtreequery(kdtree{i}, feature{i}(:, train_id_test), feature{i}(:, test_id_test), 'NumNeighbors', 10) ;
+  toc
+  label{i} = train_label(index{i});
+end
 
