@@ -3,6 +3,7 @@ close all
 addpath(genpath('../data/pipa'))
 addpath('../caffe/matlab');
 addpath external/liblinear-2.1/matlab
+run('external/vlfeat/toolbox/vl_setup.m');
 global data;
 load('data.mat');
 
