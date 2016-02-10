@@ -11,5 +11,6 @@
 feat_cache/*.mat
 
 # Model cache
+*.mat
 models/*.mat
 models/*.caffemodel

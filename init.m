@@ -22,5 +22,6 @@ for i = 1: numel(config.MODEL_PART_WEIGHT)
   config.MODEL_PART_WEIGHT{i} = sprintf('%s/%s.caffemodel', config.MODEL_DIR, config.MODEL_PART_WEIGHT{i});
 end
 for i = 1: numel(config.MODEL_PART_WEIGHT)
-  config.MODEL_PART_FEAT{i} = sprintf('%s/%s_feat.mat', config.FEAT_CACHE, config.MODEL_PART_NAME{i});
+  config.MODEL_PART_TRAIN_FEAT{i} = sprintf('%s/%s_train_feat.mat', config.FEAT_CACHE, config.MODEL_PART_NAME{i});
+  config.MODEL_PART_TEST_FEAT{i} = sprintf('%s/%s_test_feat.mat', config.FEAT_CACHE, config.MODEL_PART_NAME{i});
 end

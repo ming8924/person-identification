@@ -1,6 +1,6 @@
 function [prediction, accuracy, decv] = svm_predict_1vall(labels, features, models, opts)
   if nargin == 3
-    opts = '';
+    opts = '-q';
   end
   classes = models{1}.classes;
 	decvs = zeros(numel(classes), numel(labels));

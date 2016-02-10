@@ -2,7 +2,7 @@
 num_data = numel(data.test_idx);
 fc7_feature = zeros(4096, num_data, numel(config.MODEL_PART_WEIGHT));
 for i = 1: numel(config.MODEL_PART_WEIGHT)
-  cur_model = sprintf('%s/%s_feat.mat', config.FEAT_CACHE, config.MODEL_PART_NAME{i});
+  cur_model = sprintf('%s/%s_test_feat.mat', config.FEAT_CACHE, config.MODEL_PART_NAME{i});
   load(cur_model);
   fc7_feature(:, :, i) = cur_fc7;
 end
@@ -23,16 +23,23 @@ test_id_test = all_id(~ismember(all_id, data.test_split));
 train_label = data.identity_ids(train_id);
 test_label = data.identity_ids(test_id);
 
+% 
+% for i = 1: numel(feature)
+%   fprintf('Building kdtree for feature %d\n', i);
+%   tic
+%   kdtree{i} = vl_kdtreebuild(feature{i}(:, train_id_test));
+%   toc
+%   fprintf('Querying the test image features\n');
+%   tic
+%   [index{i}, distance{i}] = vl_kdtreequery(kdtree{i}, feature{i}(:, train_id_test), feature{i}(:, test_id_test), 'NumNeighbors', 10);
+%   toc
+%   label{i} = train_label(index{i});
+% end
+load knn_label
 
 for i = 1: numel(feature)
-  fprintf('Building kdtree for feature %d\n', i);
-  tic
-  kdtree{i} = vl_kdtreebuild(feature{i}(:, train_id_test));
-  toc
-  fprintf('Querying the test image features\n');
-  tic
-  [index{i}, distance{i}] = vl_kdtreequery(kdtree{i}, feature{i}(:, train_id_test), feature{i}(:, test_id_test), 'NumNeighbors', 10) ;
-  toc
-  label{i} = train_label(index{i});
+  for k = 1: 10
+    predicted_label{i, k} = mode(label{i}(1:k, :))';
+    accuracy(i, k) = (sum(predicted_label{i, k} == test_label))/numel(test_label);
+  end
 end
-

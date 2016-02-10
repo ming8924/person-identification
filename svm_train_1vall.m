@@ -5,6 +5,6 @@ function models = svm_train_1vall(labels, features, opts)
 		 fprintf('Training SVM for class %d/%d\n', i, numel(classes));
 		 models{i} = train(double(labels==classes(i)), features, opts);
 		 models{i}.classes = classes;
-     [a,b,c] = predict(double(labels==classes(i)), features, models{i});
+%      [a,b,c] = predict(double(labels==classes(i)), features, models{i});
 	end
 end
