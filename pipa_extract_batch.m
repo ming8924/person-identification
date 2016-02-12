@@ -25,7 +25,7 @@ else
     fprintf('%s\n', config.MODEL_PART_NAME{i});
     if ~exist('bboxes', 'var') || ~isfield(bboxes, config.MODEL_PART_NAME{i}) || config.OVERRIDE_EXTRACT
       cur_bboxes = zeros(numel(split_index), 4);
-      for im_idx = 1: numel(split_index)
+      parfor im_idx = 1: numel(split_index)
   %       fprintf('%s: Image %d/%d\n', config.MODEL_PART_NAME{i}, im_idx, numel(split_index));
         im = imread(im_list{im_idx});
         head_bbox = data.head_boxes(split_index(im_idx), :);
@@ -47,18 +47,21 @@ batch_size = 256;
 caffe.set_mode_gpu();
 caffe.set_device(0);
 for i = 1: numel(config.MODEL_PART_WEIGHT)
+  textprogressbar('Extracting batch features: ');
   if exist(feat_name{i}, 'file') ~= 2 || config.OVERRIDE_EXTRACT
     weights = config.MODEL_PART_WEIGHT{i};
     net = caffe.Net(model, weights, 'test'); % create net and load weights
     num_batches = ceil(num_images/batch_size);
-    for bb = 1 : num_batches
-        range = 1+batch_size*(bb-1):min(num_images,batch_size * bb);
-        im_data = prepare_batch(im_list(range), bboxes.(config.MODEL_PART_NAME{i})(range, :), batch_size);
-        fprintf('Batch %d out of %d %.2f%% \n',bb,num_batches,bb/num_batches*100);
-        res = net.forward({im_data});
-        res = squeeze(res{1});
-        fc7_feature(:, range, i) = res(:,mod(range-1,batch_size)+1);
+    for bb = 1 : 2%num_batches
+      textprogressbar(100 * bb/ num_batches);
+      range = 1+batch_size*(bb-1):min(num_images,batch_size * bb);
+      im_data = prepare_batch(im_list(range), bboxes.(config.MODEL_PART_NAME{i})(range, :), batch_size);
+%       fprintf('Batch %d out of %d %.2f%% \n',bb,num_batches,bb/num_batches*100);
+      res = net.forward({im_data});
+      res = squeeze(res{1});
+      fc7_feature(:, range, i) = res(:,mod(range-1,batch_size)+1);
     end
+    textprogressbar('Done');
     caffe.reset_all();
   end
 end

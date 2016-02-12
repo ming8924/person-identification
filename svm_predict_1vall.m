@@ -10,6 +10,7 @@ function [prediction, accuracy, decv] = svm_predict_1vall(labels, features, mode
 		 [pred, acc, decvs(i, :)] = predict(double(labels==classes(i)), features, models{i}, opts);
      recall = sum(pred)/sum(double(labels==classes(i)));
 	end
+	textprogressbar('Done');
 	[decv, I] = max(-decvs, [], 1);
 	prediction = classes(I);
 	accuracy = sum(prediction==labels)/numel(labels);
