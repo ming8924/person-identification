@@ -16,6 +16,7 @@ for i = 1: numel(split_index)
   im_list{i} = sprintf('%s/%s_%s.jpg',im_dir, data.photoset_ids{index}, data.photo_ids{index});
 end
 
+parpool('local', 12);
 % Extract bounding boxes for different body parts
 if exist('bboxes.mat', 'file')
   load bboxes.mat
