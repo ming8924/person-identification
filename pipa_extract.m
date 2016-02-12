@@ -11,14 +11,14 @@ end
 
 fc7_feature = single(zeros(4096, numel(split_index), numel(config.MODEL_PART_WEIGHT)));
 for i = 1: numel(config.MODEL_PART_WEIGHT)
-  if exist(config.MODEL_PART_FEAT{i}, 'file') ~= 2 || config.OVERRIDE_EXTRACT
+  if exist(feat_name{i}, 'file') ~= 2 || config.OVERRIDE_EXTRACT
     weights = config.MODEL_PART_WEIGHT{i};
     caffe.set_mode_gpu();
     caffe.set_device(0);
     net = caffe.Net(model, weights, 'test'); % create net and load weights
     for im_idx = 1: numel(split_index)
       fprintf('%s: Image %d/%d\n', config.MODEL_PART_NAME{i}, im_idx, numel(split_index));
-      [im, bbox] = load_im(split_index(im_idx), split_set);
+      [im, bbox] = load_im(split_index(im_idx), split_set, data);
       body_part = crop_body(im, bbox, config.MODEL_PART_NAME{i});
       im_data = prepare_image(body_part);
       res = net.forward({im_data});
