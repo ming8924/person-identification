@@ -36,9 +36,8 @@ else
     toc
   end
   clear cur_bboxes
+	save('bboxes.mat', 'bboxes');
 end
-
-
 
 % For each body part, extract features in batch mode
 num_images = numel(split_index);
@@ -52,11 +51,10 @@ for i = 1: numel(config.MODEL_PART_WEIGHT)
     weights = config.MODEL_PART_WEIGHT{i};
     net = caffe.Net(model, weights, 'test'); % create net and load weights
     num_batches = ceil(num_images/batch_size);
-    for bb = 1 : 2%num_batches
+    for bb = 1 : num_batches
       textprogressbar(100 * bb/ num_batches);
       range = 1+batch_size*(bb-1):min(num_images,batch_size * bb);
       im_data = prepare_batch(im_list(range), bboxes.(config.MODEL_PART_NAME{i})(range, :), batch_size);
-%       fprintf('Batch %d out of %d %.2f%% \n',bb,num_batches,bb/num_batches*100);
       res = net.forward({im_data});
       res = squeeze(res{1});
       fc7_feature(:, range, i) = res(:,mod(range-1,batch_size)+1);
@@ -64,4 +62,6 @@ for i = 1: numel(config.MODEL_PART_WEIGHT)
     textprogressbar('Done');
     caffe.reset_all();
   end
+  feat = squeeze(fc7_feature(:, :, 1));
+	save(feat_name{i}, 'feat');
 end
