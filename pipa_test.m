@@ -28,8 +28,8 @@ test_label = data.identity_ids(test_id);
 for i = 1: numel(feature)
   fprintf('Training SVM for feature comb %d\n', i);
   tic
-  model{i} = train(train_label, sparse(feature{i}(:, train_id_test, 1))', '-B 1 -c 100 -q');
-  [predicted_label{i}, accuracy{i}, dv] = predict(test_label, sparse(feature{i}(:, test_id_test, 1))', model{i});
+  svm_model{i} = train(train_label, sparse(feature{i}(:, train_id_test, 1))', '-B 1 -c 100 -q');
+  [predicted_label{i}, accuracy{i}, dv] = predict(test_label, sparse(feature{i}(:, test_id_test, 1))', svm_model{i});
   fprintf('Head model accuracy: %f\n', accuracy{i}(1));
   toc
 end

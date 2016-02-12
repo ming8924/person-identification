@@ -63,6 +63,6 @@ for i = 1: numel(config.MODEL_PART_WEIGHT)
     textprogressbar('Done');
     caffe.reset_all();
   end
-  feat = squeeze(fc7_feature(:, :, 1));
+  feat = squeeze(fc7_feature(:, :, i));
 	save(feat_name{i}, 'feat');
 end
